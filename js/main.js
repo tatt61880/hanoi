@@ -12,12 +12,16 @@
   let stepPrev = 0;
   let speed = 0;
 
+  let elemReload;
   let elemSpeedInfo;
 
+  let elemSvg;
   let elemStop;
   let elemStart;
   let elemSpeedDown;
   let elemSpeedUp;
+
+  let setIntervalId;
 
   function updateSpeedInfo() {
     let elem;
@@ -63,12 +67,18 @@
   function init() {
     document.getElementById('versionInfo').innerText = version;
 
-    const elemSvg = document.getElementById('svgBoard');
+    elemSvg = document.getElementById('svgBoard');
+    elemReload = document.getElementById('buttonReload');
     elemSpeedInfo = document.getElementById('speedInfo');
     elemStart = document.getElementById('buttonStart');
     elemStop = document.getElementById('buttonStop');
     elemSpeedDown = document.getElementById('buttonSpeedDown');
     elemSpeedUp = document.getElementById('buttonSpeedUp');
+
+    elemReload.addEventListener('click', function() {
+      window.clearInterval(setIntervalId);
+      reset();
+    }, false);
 
     elemStart.addEventListener('click', function() {
       elemStop.style.display = 'block';
@@ -119,12 +129,16 @@
       updateSpeedInfo();
     }, false);
 
-    const array = [];
+    reset();
+  }
+
+  function reset() {
+    const stepArray = [];
     function hanoi(n, f, t, v)
     {
       if (n > 0) {
         hanoi(n - 1, f, v, t);
-        array.push([f, t]);
+        stepArray.push([f, t]);
         hanoi(n - 1, v, t, f);
       }
     }
@@ -133,6 +147,9 @@
 
     const statesArray = [[], [], []];
     statesArray[0] = Array.from(new Array(num), (_, i) => i + 1).reverse(); // num, num-1, ..., 2, 1
+
+    stop();
+    step = 0;
     draw(elemSvg, statesArray);
     stepPrev = step;
 
@@ -140,11 +157,11 @@
 
     {
       let i = 0;
-      window.setInterval(function() {
+      setIntervalId = window.setInterval(function() {
         step += speed;
-        if (step > array.length * speedStep) {
+        if (step > stepArray.length * speedStep) {
           stop();
-          step = array.length * speedStep;
+          step = stepArray.length * speedStep;
         }
         if (step < 0) {
           stop();
@@ -153,9 +170,9 @@
         if (step != stepPrev && step % speedStep == 0) {
           stepPrev = step;
           if (speed > 0) {
-            if (i != array.length) {
-              const from = array[i][0];
-              const to = array[i][1];
+            if (i != stepArray.length) {
+              const from = stepArray[i][0];
+              const to = stepArray[i][1];
 
               const val = statesArray[from][statesArray[from].length - 1];
               statesArray[from].pop();
@@ -168,8 +185,8 @@
             if (i != 0) {
               i--;
 
-              const from = array[i][1];
-              const to = array[i][0];
+              const from = stepArray[i][1];
+              const to = stepArray[i][0];
 
               const val = statesArray[from][statesArray[from].length - 1];
               statesArray[from].pop();

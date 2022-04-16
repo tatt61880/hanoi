@@ -4,8 +4,8 @@
   <title>ハノイの塔</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=500">
-  <script src="./js/main.js?2022.04.17-b"></script>
-  <link rel="stylesheet" href="./style.css?2022.04.17">
+  <script src="./js/main.js?2022.04.17-c"></script>
+  <link rel="stylesheet" href="./style.css?2022.04.17-c">
   <link rel="icon" type="image/x-icon" href="./images/favicon.png">
   <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2022.04.16">
 </head>
@@ -15,7 +15,18 @@
   <div>
     <h1>ハノイの塔</h1>
     <p id="versionInfo"><br></p>
-    <div id="speedInfo"></div>
+    <div>
+      <div id="reload">
+        <svg width="60" height="60">
+          <g id="buttonReload">
+            <circle cx="30" cy="30" r="28" fill="lightgreen" stroke="green" stroke-width="4" />
+            <path d="M 44 30 A 14 14 0 1 1 35 18" fill="none" stroke="green" stroke-width="4" />
+            <path d="M 31 10 L 42 21 L 27 24 Z" fill="green" stroke="none" stroke-width="4" />
+          </g>
+        </svg>
+      </div>
+      <span id="speedInfo"></span>
+    </div>
     <svg id="svgBoard" width="500" height="200"></svg>
     <div>
       <a class="button">
