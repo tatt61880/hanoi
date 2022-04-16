@@ -1,5 +1,5 @@
 'use strict';
-const version = 'Version: 2022.04.17';
+const version = 'Version: 2022.04.16';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 window.addEventListener('load', init, false);
