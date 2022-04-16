@@ -1,42 +1,74 @@
 'use strict';
-const version = 'Version: 2022.04.16';
+const version = 'Version: 2022.04.17';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 window.addEventListener('load', init, false);
 const num = 12;
+const speedStep = 64;
+const interval = 10;
+
 let step = 0;
 let stepPrev = 0;
 let speed = 0;
-const speedStep = 64;
+
+let elemStop;
+let elemStart;
+let elemSpeed;
+
+function stop() {
+  elemStop.style.display = 'none';
+  elemStart.style.display = 'block';
+  speed = 0;
+  elemSpeed.innerText = '⏸';
+}
 
 function init(e) {
   const elemSvg = document.getElementById('svgBoard');
-  const elemStart = document.getElementById('buttonStart');
-  const elemStop = document.getElementById('buttonStop');
+  elemSpeed = document.getElementById('speed');
+  elemStart = document.getElementById('buttonStart');
+  elemStop = document.getElementById('buttonStop');
+  const elemSpeedDown = document.getElementById('buttonSpeedDown');
   const elemSpeedUp = document.getElementById('buttonSpeedUp');
-  const elemSpeed = document.getElementById('speed');
 
   elemStart.addEventListener('click', function() {
-    speed = 1;
     elemStop.style.display = 'block';
     elemStart.style.display = 'none';
+    speed = 1;
     elemSpeed.innerText = '▶';
   }, false);
 
-  elemStop.addEventListener('click', function() {
-    speed = 0;
-    elemStop.style.display = 'none';
-    elemStart.style.display = 'block';
-    elemSpeed.innerText = '⏸';
+  elemStop.addEventListener('click', stop, false);
+
+  elemSpeedDown.addEventListener('click', function() {
+    elemStop.style.display = 'block';
+    elemStart.style.display = 'none';
+    switch (speed) {
+    case -1:
+    case -2:
+    case -4:
+    case -8:
+    case -16:
+    case -32:
+      speed *= 2;
+      break;
+    default:
+      speed = -1;
+      break;
+    }
+    while (step % speed != 0) step++;;
+    elemSpeed.innerText = speed == -1 ? `⏪` : `⏪x${Math.abs(speed)}`;
   }, false);
 
   elemSpeedUp.addEventListener('click', function() {
+    elemStop.style.display = 'block';
+    elemStart.style.display = 'none';
     switch (speed) {
     case 1:
     case 2:
     case 4:
     case 8:
     case 16:
+    case 32:
       speed *= 2;
       break;
     default:
@@ -64,27 +96,48 @@ function init(e) {
   draw(elemSvg, statesArray);
   stepPrev = step;
 
-  setTimeout(function() {
+  {
     let i = 0;
-    let id = setInterval(function() {
+    setInterval(function() {
       step += speed;
+      if (step > array.length * speedStep) {
+        stop();
+        step = array.length * speedStep;
+      }
+      if (step < 0) {
+        stop();
+        step = 0;
+      }
       if (step != stepPrev && step % speedStep == 0) {
         stepPrev = step;
-        const from = array[i][0];
-        const to = array[i][1];
+        if (speed > 0) {
+          if (i != array.length) {
+            const from = array[i][0];
+            const to = array[i][1];
 
-        const val = statesArray[from][statesArray[from].length - 1];
-        statesArray[from].pop();
-        statesArray[to].push(val);
-        draw(elemSvg, statesArray);
+            const val = statesArray[from][statesArray[from].length - 1];
+            statesArray[from].pop();
+            statesArray[to].push(val);
+            draw(elemSvg, statesArray);
 
-        i++;
-        if (i == array.length) {
-          clearInterval(id);
+            i++;
+          }
+        } else {
+          if (i != 0) {
+            i--;
+
+            const from = array[i][1];
+            const to = array[i][0];
+
+            const val = statesArray[from][statesArray[from].length - 1];
+            statesArray[from].pop();
+            statesArray[to].push(val);
+            draw(elemSvg, statesArray);
+          }
         }
       }
-    }, 20);
-  }, 500);
+    }, interval);
+  };
 }
 
 function createRect(param) {
