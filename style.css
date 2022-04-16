@@ -1,0 +1,12 @@
+a.button {
+  display: inline-block;
+  border-radius: 100%;
+  width: 60px;
+  height: 60px;
+  user-select: none;
+}
+
+g {
+  cursor: pointer;
+  user-select: none;
+}

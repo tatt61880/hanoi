@@ -1,13 +1,54 @@
 'use strict';
-const version = 'Version: 2022.03.21';
+const version = 'Version: 2022.04.16';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 window.addEventListener('load', init, false);
 const num = 12;
 let step = 0;
+let stepPrev = 0;
+let speed = 0;
+const speedStep = 32;
 
 function init(e) {
   const elemSvg = document.getElementById('svgBoard');
+  const elemStart = document.getElementById('buttonStart');
+  const elemStop = document.getElementById('buttonStop');
+  const elemSpeedUp = document.getElementById('buttonSpeedUp');
+
+  elemStart.addEventListener('click', function() {
+    speed = 1;
+    elemStop.style.display = 'block';
+    elemStart.style.display = 'none'
+  }, false);
+
+  elemStop.addEventListener('click', function() {
+    speed = 1;
+    elemStop.style.display = 'none';
+    elemStart.style.display = 'block'
+  }, false);
+
+  elemSpeedUp.addEventListener('click', function() {
+    switch (speed) {
+    case 1:
+      step 
+      speed = 2;
+      break;
+    case 2:
+      speed = 4;
+      break;
+    case 4:
+      speed = 8;
+      break;
+    case 8:
+      speed = 16;
+      break;
+    default:
+      speed = 2;
+      break;
+    }
+    step = step - step % speedStep;
+    console.log(`${speed} ${step} ${step % speedStep}`);
+  }, false);
 
   const array = [];
   function hanoi(n, f, t, v)
@@ -23,27 +64,29 @@ function init(e) {
 
   const statesArray = [[], [], []];
   statesArray[0] = Array.from(new Array(num), (_, i) => (i + 1)).reverse(); // num, num-1, ..., 2, 1
-  //console.log(statesArray);
   draw(elemSvg, statesArray);
+  stepPrev = step;
 
   setTimeout(function() {
     let i = 0;
     let id = setInterval(function() {
-      const from = array[i][0];
-      const to = array[i][1];
+      step += speed;
+      if (step != stepPrev && step % speedStep == 0) {
+        stepPrev = step;
+        const from = array[i][0];
+        const to = array[i][1];
 
-      //console.log(`${from} ${to}`);
-      const val = statesArray[from][statesArray[from].length - 1];
-      statesArray[from].pop();
-      statesArray[to].push(val);
-      step++;
-      draw(elemSvg, statesArray);
+        const val = statesArray[from][statesArray[from].length - 1];
+        statesArray[from].pop();
+        statesArray[to].push(val);
+        draw(elemSvg, statesArray);
 
-      i++;
-      if (i == array.length) {
-        clearInterval(id);
+        i++;
+        if (i == array.length) {
+          clearInterval(id);
+        }
       }
-    }, 10);
+    }, 20);
   }, 500);
 }
 
@@ -77,7 +120,9 @@ function draw(elemSvg, statesArray) {
   }
   const g = document.createElementNS(SVG_NS, 'g');
   const svgWidth = 500;
-  const svgHeight = 200;
+  const svgHeight = 50 + 10 * num;
+  elemSvg.style.height = svgHeight;
+
   // 床
   {
     const rect = createRect({x: 0, y: svgHeight - 10, width: svgWidth, height: 10});
@@ -111,7 +156,7 @@ function draw(elemSvg, statesArray) {
     const text = document.createElementNS(SVG_NS, 'text');
     text.setAttribute('x', 10);
     text.setAttribute('y', 20);
-    text.appendChild(document.createTextNode(`${step}手目`));
+    text.appendChild(document.createTextNode(`${step / speedStep}手目`));
     g.appendChild(text);
   }
   elemSvg.appendChild(g);
