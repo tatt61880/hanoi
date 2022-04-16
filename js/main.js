@@ -22,7 +22,7 @@ function init(e) {
   }, false);
 
   elemStop.addEventListener('click', function() {
-    speed = 1;
+    speed = 0;
     elemStop.style.display = 'none';
     elemStart.style.display = 'block'
   }, false);
