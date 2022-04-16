@@ -1,3 +1,27 @@
+body {
+  margin: 0px;
+}
+
+#contents {
+  margin: auto;
+  padding: 0px;
+  max-width: 500px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0px;
+  font-size: 18px;
+  background-color: pink;
+}
+
+#speed {
+  font-size: 20px;
+  margin: 0 0 0 auto;;
+  width: 70px;
+  height: 20px;
+}
+
 a.button {
   display: inline-block;
   border-radius: 100%;

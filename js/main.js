@@ -14,17 +14,20 @@ function init(e) {
   const elemStart = document.getElementById('buttonStart');
   const elemStop = document.getElementById('buttonStop');
   const elemSpeedUp = document.getElementById('buttonSpeedUp');
+  const elemSpeed = document.getElementById('speed');
 
   elemStart.addEventListener('click', function() {
     speed = 1;
     elemStop.style.display = 'block';
-    elemStart.style.display = 'none'
+    elemStart.style.display = 'none';
+    elemSpeed.innerText = '▶';
   }, false);
 
   elemStop.addEventListener('click', function() {
     speed = 0;
     elemStop.style.display = 'none';
-    elemStart.style.display = 'block'
+    elemStart.style.display = 'block';
+    elemSpeed.innerText = '⏸';
   }, false);
 
   elemSpeedUp.addEventListener('click', function() {
@@ -41,6 +44,7 @@ function init(e) {
       break;
     }
     step = step - step % speed;
+    elemSpeed.innerText = `⏩x${speed}`;
   }, false);
 
   const array = [];
@@ -151,13 +155,6 @@ function draw(elemSvg, statesArray) {
     text.setAttribute('x', 10);
     text.setAttribute('y', 20);
     text.appendChild(document.createTextNode(`${step / speedStep}手目`));
-    g.appendChild(text);
-  }
-  if (speed > 1) {
-    const text = document.createElementNS(SVG_NS, 'text');
-    text.setAttribute('x', svgWidth - 50);
-    text.setAttribute('y', 20);
-    text.appendChild(document.createTextNode(`⏩x${speed}`));
     g.appendChild(text);
   }
   elemSvg.appendChild(g);
