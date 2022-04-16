@@ -33,21 +33,23 @@
     while (elemSpeedInfo.firstChild) {
       elemSpeedInfo.removeChild(elemSpeedInfo.firstChild);
     }
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('width', '120');
-    svg.setAttribute('height', '60');
+    const g = document.createElementNS(SVG_NS, 'g');
     for (const child of elem.childNodes) {
       const elem = child.cloneNode(true);
-      svg.appendChild(elem);
+      g.appendChild(elem);
     }
     if (Math.abs(speed) > 1) {
       const text = document.createElementNS(SVG_NS, 'text');
       text.setAttribute('x', 65);
       text.setAttribute('y', 40);
       text.appendChild(document.createTextNode(`x${Math.abs(speed)}`));
-      svg.appendChild(text);
+      g.appendChild(text);
     }
-    svg.setAttribute('transform', 'scale(0.5 0.5)');
+    g.setAttribute('transform', 'scale(0.5 0.5)');
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('width', '60');
+    svg.setAttribute('height', '30');
+    svg.appendChild(g);
     elemSpeedInfo.appendChild(svg);
   }
 
