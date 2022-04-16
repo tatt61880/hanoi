@@ -7,7 +7,7 @@ const num = 12;
 let step = 0;
 let stepPrev = 0;
 let speed = 0;
-const speedStep = 32;
+const speedStep = 64;
 
 function init(e) {
   const elemSvg = document.getElementById('svgBoard');
@@ -30,24 +30,17 @@ function init(e) {
   elemSpeedUp.addEventListener('click', function() {
     switch (speed) {
     case 1:
-      step 
-      speed = 2;
-      break;
     case 2:
-      speed = 4;
-      break;
     case 4:
-      speed = 8;
-      break;
     case 8:
-      speed = 16;
+    case 16:
+      speed *= 2;
       break;
     default:
       speed = 2;
       break;
     }
-    step = step - step % speedStep;
-    console.log(`${speed} ${step} ${step % speedStep}`);
+    step = step - step % speed;
   }, false);
 
   const array = [];
@@ -121,6 +114,7 @@ function draw(elemSvg, statesArray) {
   const g = document.createElementNS(SVG_NS, 'g');
   const svgWidth = 500;
   const svgHeight = 50 + 10 * num;
+  elemSvg.style.width = svgWidth;
   elemSvg.style.height = svgHeight;
 
   // 床
@@ -157,6 +151,13 @@ function draw(elemSvg, statesArray) {
     text.setAttribute('x', 10);
     text.setAttribute('y', 20);
     text.appendChild(document.createTextNode(`${step / speedStep}手目`));
+    g.appendChild(text);
+  }
+  if (speed > 1) {
+    const text = document.createElementNS(SVG_NS, 'text');
+    text.setAttribute('x', svgWidth - 50);
+    text.setAttribute('y', 20);
+    text.appendChild(document.createTextNode(`⏩x${speed}`));
     g.appendChild(text);
   }
   elemSvg.appendChild(g);
