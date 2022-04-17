@@ -81,6 +81,7 @@
     }, false);
 
     elemStart.addEventListener('click', function() {
+      elemSpeedDown.style.display = 'block';
       elemStop.style.display = 'block';
       elemStart.style.display = 'none';
       speed = 1;
@@ -90,8 +91,9 @@
     elemStop.addEventListener('click', stop, false);
 
     elemSpeedDown.addEventListener('click', function() {
-      elemStop.style.display = 'block';
-      elemStart.style.display = 'none';
+      elemStop.style.display = 'none';
+      elemStart.style.display = 'block';
+      elemSpeedUp.style.display = 'block';
       switch (speed) {
       case -1:
       case -2:
@@ -110,8 +112,9 @@
     }, false);
 
     elemSpeedUp.addEventListener('click', function() {
-      elemStop.style.display = 'block';
-      elemStart.style.display = 'none';
+      elemSpeedDown.style.display = 'block';
+      elemStop.style.display = 'none';
+      elemStart.style.display = 'block';
       switch (speed) {
       case 1:
       case 2:
@@ -148,6 +151,7 @@
     const statesArray = [[], [], []];
     statesArray[0] = Array.from(new Array(num), (_, i) => i + 1).reverse(); // num, num-1, ..., 2, 1
 
+    elemSpeedDown.style.display = 'none';
     stop();
     step = 0;
     draw(elemSvg, statesArray);
@@ -159,13 +163,16 @@
       let i = 0;
       setIntervalId = window.setInterval(function() {
         step += speed;
-        if (step > stepArray.length * speedStep) {
-          stop();
-          step = stepArray.length * speedStep;
-        }
         if (step < 0) {
           stop();
+          elemSpeedDown.style.display = 'none';
           step = 0;
+        }
+        if (step > stepArray.length * speedStep) {
+          stop();
+          elemSpeedUp.style.display = 'none';
+          elemStart.style.display = 'none';
+          step = stepArray.length * speedStep;
         }
         if (step != stepPrev && step % speedStep == 0) {
           stepPrev = step;
