@@ -231,9 +231,7 @@
   ];
 
   function draw(elemSvg, statesArray) {
-    while (elemSvg.firstChild) {
-      elemSvg.removeChild(elemSvg.firstChild);
-    }
+    elemSvg.textContent = '';
     const g = document.createElementNS(SVG_NS, 'g');
     const svgWidth = 480;
     const svgHeight = 50 + 10 * num;
@@ -247,7 +245,7 @@
       g.appendChild(rect);
     }
     for (let i = 0; i < 3; ++i) {
-      const x = svgWidth / 2 - 150 + 150 * i - 5;
+      const x = svgWidth / 2 + 150 * (i - 1) - 5;
       // 棒
       {
         const rect = createRect({x: x, y: svgHeight - 20 - num * 10, width: 10, height: (num + 1) * 10});
@@ -255,11 +253,10 @@
         g.appendChild(rect);
       }
 
-      const states = statesArray[i];
       let y = svgHeight - 10 - 10;
       const width = 5;
       // リング
-      for (const state of states) {
+      for (const state of statesArray[i]) {
         const rect = createRect({x: x - state * width, y: y, width: 10 + width * (2 * state), height: 10});
         rect.setAttribute('fill', colors[(state - 1) % colors.length]);
         g.appendChild(rect);
