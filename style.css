@@ -19,6 +19,11 @@ h1 {
   background-color: pink;
 }
 
+div.pink {
+  margin-bottom: 5px;
+  border: solid 3px pink;
+}
+
 #reload {
   float: left;
   margin: 0 15px;

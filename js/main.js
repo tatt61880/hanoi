@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.04.17';
+  const version = 'Version: 2022.05.08';
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   window.addEventListener('load', init, false);
@@ -235,7 +235,7 @@
       elemSvg.removeChild(elemSvg.firstChild);
     }
     const g = document.createElementNS(SVG_NS, 'g');
-    const svgWidth = 500;
+    const svgWidth = 480;
     const svgHeight = 50 + 10 * num;
     elemSvg.style.width = svgWidth;
     elemSvg.style.height = svgHeight;
@@ -247,7 +247,7 @@
       g.appendChild(rect);
     }
     for (let i = 0; i < 3; ++i) {
-      const x = 100 + 150 * i - 5;
+      const x = svgWidth / 2 - 150 + 150 * i - 5;
       // 棒
       {
         const rect = createRect({x: x, y: svgHeight - 20 - num * 10, width: 10, height: (num + 1) * 10});
