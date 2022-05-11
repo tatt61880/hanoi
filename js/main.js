@@ -1,10 +1,12 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.05.08';
+  const version = 'Version: 2022.05.12';
+
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
   window.addEventListener('load', init, false);
   const num = 12;
+  const speedMax = 64;
   const speedStep = 64;
   const interval = 10;
 
@@ -14,6 +16,15 @@
 
   let elemReload;
   let elemSpeedInfo;
+  let elemStep;
+
+  let svgHeight;
+  const floorHeight = 10;
+  const barWidth = 10;
+  const ringWidthStep = 5;
+  const ringHeight = 10;
+  let elemRings = [];
+  let xPos = [];
 
   let elemSvg;
   let elemStop;
@@ -94,18 +105,10 @@
       elemStop.style.display = 'none';
       elemStart.style.display = 'block';
       elemSpeedUp.style.display = 'block';
-      switch (speed) {
-      case -1:
-      case -2:
-      case -4:
-      case -8:
-      case -16:
-      case -32:
+      if (speed < 0 && speed != -speedMax) {
         speed *= 2;
-        break;
-      default:
+      } else {
         speed = -1;
-        break;
       }
       while (step % speed != 0) step++;
       updateSpeedInfo();
@@ -115,18 +118,10 @@
       elemSpeedDown.style.display = 'block';
       elemStop.style.display = 'none';
       elemStart.style.display = 'block';
-      switch (speed) {
-      case 1:
-      case 2:
-      case 4:
-      case 8:
-      case 16:
-      case 32:
+      if (speed > 1 && speed != speedMax) {
         speed *= 2;
-        break;
-      default:
+      } else {
         speed = 2;
-        break;
       }
       step = step - step % speed;
       updateSpeedInfo();
@@ -141,7 +136,7 @@
     {
       if (n > 0) {
         hanoi(n - 1, f, v, t);
-        stepArray.push([f, t]);
+        stepArray.push({from: f, to: t});
         hanoi(n - 1, v, t, f);
       }
     }
@@ -154,8 +149,8 @@
     elemSpeedDown.style.display = 'none';
     stop();
     step = 0;
-    draw(elemSvg, statesArray);
     stepPrev = step;
+    svgUpdateByArray(elemSvg, statesArray);
 
     updateSpeedInfo();
 
@@ -178,31 +173,25 @@
           stepPrev = step;
           if (speed > 0) {
             if (i != stepArray.length) {
-              const from = stepArray[i][0];
-              const to = stepArray[i][1];
-
-              const val = statesArray[from][statesArray[from].length - 1];
-              statesArray[from].pop();
-              statesArray[to].push(val);
-              draw(elemSvg, statesArray);
-
+              moveRing(stepArray[i].from, stepArray[i].to);
               i++;
             }
           } else {
             if (i != 0) {
               i--;
-
-              const from = stepArray[i][1];
-              const to = stepArray[i][0];
-
-              const val = statesArray[from][statesArray[from].length - 1];
-              statesArray[from].pop();
-              statesArray[to].push(val);
-              draw(elemSvg, statesArray);
+              moveRing(stepArray[i].to, stepArray[i].from);
             }
           }
         }
       }, interval);
+    }
+
+    function moveRing(from, to) {
+      const state = statesArray[from].pop();
+      statesArray[to].push(state);
+      elemRings[state].setAttribute('x', xPos[to] - state * ringWidthStep - barWidth / 2);
+      elemRings[state].setAttribute('y', svgHeight - floorHeight - ringHeight * statesArray[to].length);
+      elemStep.innerHTML = `${step / speedStep}手目`;
     }
   }
 
@@ -230,37 +219,42 @@
     '#E5004F',
   ];
 
-  function draw(elemSvg, statesArray) {
+  function svgUpdateByArray(elemSvg, statesArray) {
     elemSvg.textContent = '';
     const g = document.createElementNS(SVG_NS, 'g');
     const svgWidth = 480;
-    const svgHeight = 50 + 10 * num;
+    svgHeight = 30 + ringHeight * (num + 1) + floorHeight;
     elemSvg.style.width = svgWidth;
     elemSvg.style.height = svgHeight;
 
     // 床
     {
-      const rect = createRect({x: 0, y: svgHeight - 10, width: svgWidth, height: 10});
+      const rect = createRect({x: 0, y: svgHeight - floorHeight, width: svgWidth, height: floorHeight});
       rect.setAttribute('fill', '#a80');
       g.appendChild(rect);
     }
-    for (let i = 0; i < 3; ++i) {
-      const x = svgWidth / 2 + 150 * (i - 1) - 5;
-      // 棒
-      {
-        const rect = createRect({x: x, y: svgHeight - 20 - num * 10, width: 10, height: (num + 1) * 10});
-        rect.setAttribute('fill', '#a80');
-        g.appendChild(rect);
-      }
 
-      let y = svgHeight - 10 - 10;
-      const width = 5;
-      // リング
+    for (let i = 0; i < 3; ++i) {
+      xPos[i] = svgWidth / 2 + 150 * (i - 1);
+    }
+
+    // 棒
+    for (let i = 0; i < 3; ++i) {
+      const rect = createRect({x: xPos[i] - barWidth / 2, y: svgHeight - floorHeight - (num + 1) * ringHeight, width: barWidth, height: (num + 1) * ringHeight});
+      rect.setAttribute('fill', '#a80');
+      g.appendChild(rect);
+    }
+
+    // リング
+    for (let i = 0; i < 3; ++i) {
+      let y = svgHeight - floorHeight - ringHeight;
       for (const state of statesArray[i]) {
-        const rect = createRect({x: x - state * width, y: y, width: 10 + width * (2 * state), height: 10});
+        const rect = createRect({x: xPos[i] - state * ringWidthStep - barWidth / 2, y: y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight});
         rect.setAttribute('fill', colors[(state - 1) % colors.length]);
+        rect.setAttribute('id', state);
+        elemRings[state] = rect;
         g.appendChild(rect);
-        y -= 10;
+        y -= ringHeight;
       }
     }
 
@@ -268,7 +262,9 @@
       const text = document.createElementNS(SVG_NS, 'text');
       text.setAttribute('x', 15);
       text.setAttribute('y', 20);
+      text.setAttribute('id', 'step');
       text.appendChild(document.createTextNode(`${step / speedStep}手目`));
+      elemStep = text;
       g.appendChild(text);
     }
     elemSvg.appendChild(g);
