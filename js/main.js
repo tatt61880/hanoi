@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.05.12';
+  const version = 'Version: 2022.05.13';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -251,7 +251,6 @@
       for (const state of statesArray[i]) {
         const rect = createRect({x: xPos[i] - state * ringWidthStep - barWidth / 2, y: y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight});
         rect.setAttribute('fill', colors[(state - 1) % colors.length]);
-        rect.setAttribute('id', state);
         elemRings[state] = rect;
         g.appendChild(rect);
         y -= ringHeight;
@@ -262,7 +261,6 @@
       const text = document.createElementNS(SVG_NS, 'text');
       text.setAttribute('x', 15);
       text.setAttribute('y', 20);
-      text.setAttribute('id', 'step');
       text.appendChild(document.createTextNode(`${step / speedStep}手目`));
       elemStep = text;
       g.appendChild(text);
