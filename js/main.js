@@ -1,10 +1,9 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.05.13';
+  const version = 'Version: 2022.06.11';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  window.addEventListener('load', init, false);
   const num = 12;
   const speedMax = 64;
   const speedStep = 64;
@@ -33,6 +32,24 @@
   let elemSpeedUp;
 
   let setIntervalId;
+
+  window.addEventListener('load', init, false);
+
+  function keydown(e) {
+    if (e.key == ' ') {
+      if (speed == 0) {
+        start();
+      } else {
+        stop();
+      }
+    } else if (e.key == 'r') {
+      reload();
+    } else if (e.key == 'ArrowLeft') {
+      speedDown();
+    } else if (e.key == 'ArrowRight') {
+      speedUp();
+    }
+  }
 
   function updateSpeedInfo() {
     let elem;
@@ -68,10 +85,49 @@
     elemSpeedInfo.appendChild(svg);
   }
 
+  function reload() {
+    window.clearInterval(setIntervalId);
+    reset();
+  }
+
+  function start() {
+    showElem(elemSpeedDown);
+    showElem(elemStop);
+    hideElem(elemStart);
+    speed = 1;
+    updateSpeedInfo();
+  }
+
   function stop() {
-    elemStop.style.display = 'none';
-    elemStart.style.display = 'block';
+    hideElem(elemStop);
+    showElem(elemStart);
     speed = 0;
+    updateSpeedInfo();
+  }
+
+  function speedDown() {
+    hideElem(elemStop);
+    showElem(elemStart);
+    showElem(elemSpeedUp);
+    if (speed < 0 && speed != -speedMax) {
+      speed *= 2;
+    } else {
+      speed = -1;
+    }
+    while (step % speed != 0) step++;
+    updateSpeedInfo();
+  }
+
+  function speedUp() {
+    showElem(elemSpeedDown);
+    hideElem(elemStop);
+    showElem(elemStart);
+    if (speed > 1 && speed != speedMax) {
+      speed *= 2;
+    } else {
+      speed = 2;
+    }
+    step = step - step % speed;
     updateSpeedInfo();
   }
 
@@ -86,46 +142,13 @@
     elemSpeedDown = document.getElementById('buttonSpeedDown');
     elemSpeedUp = document.getElementById('buttonSpeedUp');
 
-    elemReload.addEventListener('click', function() {
-      window.clearInterval(setIntervalId);
-      reset();
-    }, false);
+    document.addEventListener('keydown', keydown, false);
 
-    elemStart.addEventListener('click', function() {
-      elemSpeedDown.style.display = 'block';
-      elemStop.style.display = 'block';
-      elemStart.style.display = 'none';
-      speed = 1;
-      updateSpeedInfo();
-    }, false);
-
+    elemReload.addEventListener('click', reload, false);
+    elemStart.addEventListener('click', start, false);
     elemStop.addEventListener('click', stop, false);
-
-    elemSpeedDown.addEventListener('click', function() {
-      elemStop.style.display = 'none';
-      elemStart.style.display = 'block';
-      elemSpeedUp.style.display = 'block';
-      if (speed < 0 && speed != -speedMax) {
-        speed *= 2;
-      } else {
-        speed = -1;
-      }
-      while (step % speed != 0) step++;
-      updateSpeedInfo();
-    }, false);
-
-    elemSpeedUp.addEventListener('click', function() {
-      elemSpeedDown.style.display = 'block';
-      elemStop.style.display = 'none';
-      elemStart.style.display = 'block';
-      if (speed > 1 && speed != speedMax) {
-        speed *= 2;
-      } else {
-        speed = 2;
-      }
-      step = step - step % speed;
-      updateSpeedInfo();
-    }, false);
+    elemSpeedDown.addEventListener('click', speedDown, false);
+    elemSpeedUp.addEventListener('click', speedUp, false);
 
     reset();
   }
@@ -146,7 +169,7 @@
     const statesArray = [[], [], []];
     statesArray[0] = Array.from(new Array(num), (_, i) => i + 1).reverse(); // num, num-1, ..., 2, 1
 
-    elemSpeedDown.style.display = 'none';
+    hideElem(elemSpeedDown);
     stop();
     step = 0;
     stepPrev = step;
@@ -160,13 +183,13 @@
         step += speed;
         if (step < 0) {
           stop();
-          elemSpeedDown.style.display = 'none';
+          hideElem(elemSpeedDown);
           step = 0;
         }
         if (step > stepArray.length * speedStep) {
           stop();
-          elemSpeedUp.style.display = 'none';
-          elemStart.style.display = 'none';
+          hideElem(elemSpeedUp);
+          hideElem(elemStart);
           step = stepArray.length * speedStep;
         }
         if (step != stepPrev && step % speedStep == 0) {
@@ -266,5 +289,15 @@
       g.appendChild(text);
     }
     elemSvg.appendChild(g);
+  }
+
+  function showElem(elem) {
+    if (elem === undefined) return;
+    elem.style.display = 'block';
+  }
+
+  function hideElem(elem) {
+    if (elem === undefined) return;
+    elem.style.display = 'none';
   }
 })();
