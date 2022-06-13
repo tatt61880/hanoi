@@ -155,8 +155,7 @@
 
   function reset() {
     const stepArray = [];
-    function hanoi(n, f, t, v)
-    {
+    function hanoi(n, f, t, v) {
       if (n > 0) {
         hanoi(n - 1, f, v, t);
         stepArray.push({from: f, to: t});
