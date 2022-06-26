@@ -57,3 +57,16 @@ g {
 g.button {
   cursor: pointer;
 }
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #aef;
+}
+
+th, td {
+  border: solid 2px dodgerblue;
+  padding: 5px 20px;
+}

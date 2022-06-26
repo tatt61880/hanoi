@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.06.11';
+  const version = 'Version: 2022.06.27';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -37,7 +37,7 @@
 
   function keydown(e) {
     if (e.key == ' ') {
-      if (speed == 0) {
+      if (speed != 1) {
         start();
       } else {
         stop();
@@ -91,6 +91,7 @@
   }
 
   function start() {
+    if (step / speedStep == 2 ** num - 1) return;
     showElem(elemSpeedDown);
     showElem(elemStop);
     hideElem(elemStart);
@@ -280,12 +281,11 @@
     }
 
     {
-      const text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('x', 15);
-      text.setAttribute('y', 20);
-      text.appendChild(document.createTextNode(`${step / speedStep}手目`));
-      elemStep = text;
-      g.appendChild(text);
+      elemStep = document.createElementNS(SVG_NS, 'text');
+      elemStep.setAttribute('x', 15);
+      elemStep.setAttribute('y', 20);
+      elemStep.innerHTML = `${step / speedStep}手目`;
+      g.appendChild(elemStep);
     }
     elemSvg.appendChild(g);
   }
