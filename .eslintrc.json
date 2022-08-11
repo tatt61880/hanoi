@@ -5,13 +5,13 @@
   },
   "extends": "eslint:recommended",
   "globals": {
-    "window": false,
-    "document": false,
-    "location": false,
-    "setTimeout": false,
-    "clearTimeout": false,
-    "localStorage": false,
-    "jQuery": false
+    "clearTimeout": true,
+    "console": true,
+    "document": true,
+    "localStorage": true,
+    "location": true,
+    "setTimeout": true,
+    "window": true
   },
   "rules": {
     "comma-spacing": "error",
