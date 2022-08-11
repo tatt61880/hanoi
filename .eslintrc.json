@@ -21,6 +21,7 @@
     "key-spacing": "error",
     "keyword-spacing": "error",
     "no-console": "error",
+    "no-constant-condition": ["error", { "checkLoops": false }],
     "no-empty": [2, {"allowEmptyCatch": true}],
     "no-extra-parens": "warn",
     "no-multi-spaces": "error",
@@ -29,6 +30,8 @@
     "no-var": "error",
     "quotes": ["error", "single"],
     "semi": "error",
+    "space-before-blocks": ["error", "always"],
+    "space-before-function-paren": ["error", "never"],
     "space-in-parens": ["error", "never"],
     "space-infix-ops": "error"
   },
