@@ -1,7 +1,7 @@
 all:
 	npm run eslint
-	npm run stylelint
 	npm run htmlhint
+	npm run stylelint
 
 install:
 	npm install
