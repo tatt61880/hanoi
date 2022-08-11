@@ -3,18 +3,18 @@ html {
 }
 
 body {
-  margin: 0px;
+  margin: 0;
 }
 
 #contents {
   margin: auto;
-  padding: 0px;
+  padding: 0;
   max-width: 500px;
   text-align: center;
 }
 
 h1 {
-  margin: 0px;
+  margin: 0;
   font-size: 18px;
   background-color: pink;
 }
@@ -30,12 +30,11 @@ div.pink {
   height: 60px;
 }
 
-#speedInfo {
+#speed-info {
   display: flex;
   justify-content: flex-end;
   float: right;
   margin: 15px;
-
   font-size: 30px;
   width: auto;
   height: 30px;
@@ -66,7 +65,8 @@ th {
   background-color: #aef;
 }
 
-th, td {
+th,
+td {
   border: solid 2px dodgerblue;
   padding: 5px 20px;
 }

@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.06.27';
+  const version = 'Version: 2022.08.11';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -133,15 +133,15 @@
   }
 
   function init() {
-    document.getElementById('versionInfo').innerText = version;
+    document.getElementById('version').innerText = version;
 
-    elemSvg = document.getElementById('svgBoard');
-    elemReload = document.getElementById('buttonReload');
-    elemSpeedInfo = document.getElementById('speedInfo');
-    elemStart = document.getElementById('buttonStart');
-    elemStop = document.getElementById('buttonStop');
-    elemSpeedDown = document.getElementById('buttonSpeedDown');
-    elemSpeedUp = document.getElementById('buttonSpeedUp');
+    elemSvg = document.getElementById('svg-board');
+    elemReload = document.getElementById('button-reload');
+    elemSpeedInfo = document.getElementById('speed-info');
+    elemStart = document.getElementById('button-start');
+    elemStop = document.getElementById('button-stop');
+    elemSpeedDown = document.getElementById('button-speeddown');
+    elemSpeedUp = document.getElementById('button-speedup');
 
     document.addEventListener('keydown', keydown, false);
 
