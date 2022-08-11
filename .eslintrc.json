@@ -29,7 +29,8 @@
     "no-var": "error",
     "quotes": ["error", "single"],
     "semi": "error",
-    "space-in-parens": ["error", "never"]
+    "space-in-parens": ["error", "never"],
+    "space-infix-ops": "error"
   },
   "env": {
     "es2021": true
