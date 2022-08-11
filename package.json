@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/tatt61880/hanoi#readme",
   "scripts": {
-    "eslint": "eslint ./js/*.js --fix",
+    "eslint": "eslint ./src/*.js --fix",
     "htmlhint": "htmlhint ./*.html",
     "stylelint": "stylelint ./css/*.css --fix"
   },
