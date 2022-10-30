@@ -4,13 +4,15 @@ html {
 
 body {
   margin: 0;
+  background-color: #ccffff;
 }
 
 #contents {
-  margin: auto;
+  margin: 0 auto;
   padding: 0;
   max-width: 500px;
   text-align: center;
+  background-color: white;
 }
 
 h1 {
@@ -19,9 +21,19 @@ h1 {
   background-color: pink;
 }
 
+div {
+  padding-bottom: 5px;
+}
+
 div.pink {
   margin-bottom: 5px;
   border: solid 3px pink;
+}
+
+#version-info {
+  color: #bbbbbb;
+  font-weight: bold;
+  font-size: 0.9rem;
 }
 
 #reload {
@@ -58,7 +70,9 @@ g.button {
 }
 
 table {
+  margin: 10px auto;
   border-collapse: collapse;
+  font-size: 1.2rem;
 }
 
 th {

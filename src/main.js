@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.08.11';
+  const version = 'Version: 2022.10.30';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -22,8 +22,8 @@
   const barWidth = 10;
   const ringWidthStep = 5;
   const ringHeight = 10;
-  let elemRings = [];
-  let xPos = [];
+  const elemRings = [];
+  const xPos = [];
 
   let elemSvg;
   let elemStop;
@@ -33,7 +33,7 @@
 
   let setIntervalId;
 
-  window.addEventListener('load', init, false);
+  window.addEventListener('DOMContentLoaded', init, false);
 
   function keydown(e) {
     if (e.key == ' ') {
@@ -133,7 +133,7 @@
   }
 
   function init() {
-    document.getElementById('version').innerText = version;
+    document.getElementById('version-info').innerText = version;
 
     elemSvg = document.getElementById('svg-board');
     elemReload = document.getElementById('button-reload');
