@@ -73,6 +73,7 @@ table {
   margin: 10px auto;
   font-size: 1.2rem;
   border-collapse: collapse;
+  background-color: #f8f8ff;
 }
 
 th {
