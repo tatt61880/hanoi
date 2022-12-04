@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  const version = 'Version: 2022.10.30';
+  const version = 'Version: 2022.12.04';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -36,17 +36,17 @@
   window.addEventListener('DOMContentLoaded', init, false);
 
   function keydown(e) {
-    if (e.key == ' ') {
-      if (speed != 1) {
+    if (e.key === ' ') {
+      if (speed !== 1) {
         start();
       } else {
         stop();
       }
-    } else if (e.key == 'r') {
+    } else if (e.key === 'r') {
       reload();
-    } else if (e.key == 'ArrowLeft') {
+    } else if (e.key === 'ArrowLeft') {
       speedDown();
-    } else if (e.key == 'ArrowRight') {
+    } else if (e.key === 'ArrowRight') {
       speedUp();
     }
   }
@@ -55,9 +55,9 @@
     let elem;
     if (speed < 0) {
       elem = elemSpeedDown;
-    } else if (speed == 0) {
+    } else if (speed === 0) {
       elem = elemStop;
-    } else if (speed == 1) {
+    } else if (speed === 1) {
       elem = elemStart;
     } else {
       elem = elemSpeedUp;
@@ -91,7 +91,7 @@
   }
 
   function start() {
-    if (step / speedStep == 2 ** num - 1) return;
+    if (step / speedStep === 2 ** num - 1) return;
     showElem(elemSpeedDown);
     showElem(elemStop);
     hideElem(elemStart);
@@ -110,12 +110,12 @@
     hideElem(elemStop);
     showElem(elemStart);
     showElem(elemSpeedUp);
-    if (speed < 0 && speed != -speedMax) {
+    if (speed < 0 && speed !== -speedMax) {
       speed *= 2;
     } else {
       speed = -1;
     }
-    while (step % speed != 0) step++;
+    while (step % speed !== 0) step++;
     updateSpeedInfo();
   }
 
@@ -123,7 +123,7 @@
     showElem(elemSpeedDown);
     hideElem(elemStop);
     showElem(elemStart);
-    if (speed > 1 && speed != speedMax) {
+    if (speed > 1 && speed !== speedMax) {
       speed *= 2;
     } else {
       speed = 2;
@@ -192,15 +192,15 @@
           hideElem(elemStart);
           step = stepArray.length * speedStep;
         }
-        if (step != stepPrev && step % speedStep == 0) {
+        if (step !== stepPrev && step % speedStep === 0) {
           stepPrev = step;
           if (speed > 0) {
-            if (i != stepArray.length) {
+            if (i !== stepArray.length) {
               moveRing(stepArray[i].from, stepArray[i].to);
               i++;
             }
           } else {
-            if (i != 0) {
+            if (i !== 0) {
               i--;
               moveRing(stepArray[i].to, stepArray[i].from);
             }
