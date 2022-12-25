@@ -173,7 +173,7 @@
     function hanoi(n, f, t, v) {
       if (n > 0) {
         hanoi(n - 1, f, v, t);
-        stepArray.push({from: f, to: t});
+        stepArray.push({ from: f, to: t });
         hanoi(n - 1, v, t, f);
       }
     }
@@ -251,7 +251,7 @@
 
     // 床
     {
-      const rect = createRect({x: 0, y: svgHeight - floorHeight, width: svgWidth, height: floorHeight});
+      const rect = createRect({ x: 0, y: svgHeight - floorHeight, width: svgWidth, height: floorHeight });
       rect.setAttribute('fill', '#a80');
       g.appendChild(rect);
     }
@@ -262,7 +262,7 @@
 
     // 棒
     for (let i = 0; i < 3; ++i) {
-      const rect = createRect({x: xPos[i] - barWidth / 2, y: svgHeight - floorHeight - (num + 1) * ringHeight, width: barWidth, height: (num + 1) * ringHeight});
+      const rect = createRect({ x: xPos[i] - barWidth / 2, y: svgHeight - floorHeight - (num + 1) * ringHeight, width: barWidth, height: (num + 1) * ringHeight });
       rect.setAttribute('fill', '#a80');
       g.appendChild(rect);
     }
@@ -271,7 +271,7 @@
     for (let i = 0; i < 3; ++i) {
       let y = svgHeight - floorHeight - ringHeight;
       for (const state of statesArray[i]) {
-        const rect = createRect({x: xPos[i] - state * ringWidthStep - barWidth / 2, y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight});
+        const rect = createRect({ x: xPos[i] - state * ringWidthStep - barWidth / 2, y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight });
         rect.setAttribute('fill', colors[(state - 1) % colors.length]);
         elemRings[state] = rect;
         g.appendChild(rect);
