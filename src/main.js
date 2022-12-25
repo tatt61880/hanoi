@@ -25,7 +25,16 @@
   const elemRings = [];
   const xPos = [];
 
-  const elems = app.elems;
+  const elems = app.Elems({
+    versionInfo: 'version-info',
+    svg: 'svg-board',
+    speedInfo: 'speed-info',
+    buttonReload: 'button-reload',
+    buttonStart: 'button-start',
+    buttonStop: 'button-stop',
+    buttonSpeedDown: 'button-speeddown',
+    buttonSpeedUp: 'button-speedup',
+  });
   let elemStep;
 
   let setIntervalId;
@@ -130,16 +139,15 @@
   }
 
   function init() {
-    document.getElementById('version-info').innerText = version;
     elems.init();
-
-    document.addEventListener('keydown', keydown, false);
-
+    elems.versionInfo.innerText = version;
     elems.buttonReload.addEventListener('click', reload, false);
     elems.buttonStart.addEventListener('click', start, false);
     elems.buttonStop.addEventListener('click', stop, false);
     elems.buttonSpeedDown.addEventListener('click', speedDown, false);
     elems.buttonSpeedUp.addEventListener('click', speedUp, false);
+
+    document.addEventListener('keydown', keydown, false);
 
     reset();
   }
