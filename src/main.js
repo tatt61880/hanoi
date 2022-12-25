@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
   const version = 'Version: 2022.12.04';
 
@@ -179,7 +179,7 @@
 
     {
       let i = 0;
-      setIntervalId = window.setInterval(function() {
+      setIntervalId = window.setInterval(function () {
         step += speed;
         if (step < 0) {
           stop();
@@ -272,7 +272,7 @@
     for (let i = 0; i < 3; ++i) {
       let y = svgHeight - floorHeight - ringHeight;
       for (const state of statesArray[i]) {
-        const rect = createRect({x: xPos[i] - state * ringWidthStep - barWidth / 2, y: y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight});
+        const rect = createRect({x: xPos[i] - state * ringWidthStep - barWidth / 2, y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight});
         rect.setAttribute('fill', colors[(state - 1) % colors.length]);
         elemRings[state] = rect;
         g.appendChild(rect);
