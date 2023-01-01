@@ -25,7 +25,7 @@
   const elemRings = [];
   const xPos = [];
 
-  const elems = app.Elems({
+  const elems = new app.Elems({
     versionInfo: 'version-info',
     svg: 'svg-board',
     speedInfo: 'speed-info',
