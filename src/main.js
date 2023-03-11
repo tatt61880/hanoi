@@ -4,14 +4,16 @@
   const app = window.app;
   Object.freeze(app);
 
-  const version = 'Version: 2022.12.25';
+  const version = 'Version: 2023.03.11';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  const num = 12;
+  let num = 12;
   const speedMax = 64;
   const speedStep = 64;
   const interval = 10;
+  const scaleMin = 2;
+  const scaleMax = 14;
 
   let step = 0;
   let stepPrev = 0;
@@ -30,6 +32,8 @@
     svg: 'svg-board',
     speedInfo: 'speed-info',
     buttonReload: 'button-reload',
+    buttonScaleDown: 'button-scale-down',
+    buttonScaleUp: 'button-scale-up',
     buttonStart: 'button-start',
     buttonStop: 'button-stop',
     buttonSpeedDown: 'button-speeddown',
@@ -108,8 +112,34 @@
   }
 
   function reload() {
+    showElem(elems.buttonScaleDown);
+    showElem(elems.buttonScaleUp);
     window.clearInterval(setIntervalId);
     reset();
+  }
+
+  function scaleDown() {
+    if (num > scaleMin) {
+      --num;
+      reload();
+
+      showElem(elems.buttonScaleUp);
+      if (num === scaleMin) {
+        hideElem(elems.buttonScaleDown);
+      }
+    }
+  }
+
+  function scaleUp() {
+    if (num < scaleMax) {
+      ++num;
+      reload();
+
+      showElem(elems.buttonScaleDown);
+      if (num === scaleMax) {
+        hideElem(elems.buttonScaleUp);
+      }
+    }
   }
 
   function start() {
@@ -117,6 +147,8 @@
     showElem(elems.buttonSpeedDown);
     showElem(elems.buttonStop);
     hideElem(elems.buttonStart);
+    hideElem(elems.buttonScaleDown);
+    hideElem(elems.buttonScaleUp);
     speed = 1;
     updateSpeedInfo();
   }
@@ -158,6 +190,8 @@
     elems.init();
     elems.versionInfo.innerText = version;
     elems.buttonReload.addEventListener('click', reload, false);
+    elems.buttonScaleDown.addEventListener('click', scaleDown, false);
+    elems.buttonScaleUp.addEventListener('click', scaleUp, false);
     elems.buttonStart.addEventListener('click', start, false);
     elems.buttonStop.addEventListener('click', stop, false);
     elems.buttonSpeedDown.addEventListener('click', speedDown, false);
