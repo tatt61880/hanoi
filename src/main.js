@@ -62,6 +62,7 @@
   window.addEventListener('DOMContentLoaded', init, false);
 
   function keydown(e) {
+    e.preventDefault();
     if (e.key === ' ') {
       if (speed !== 1) {
         start();
@@ -74,6 +75,10 @@
       speedDown();
     } else if (e.key === 'ArrowRight') {
       speedUp();
+    } else if (e.key === 'ArrowUp') {
+      scaleUp();
+    } else if (e.key === 'ArrowDown') {
+      scaleDown();
     }
   }
 
