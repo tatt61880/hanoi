@@ -20,7 +20,9 @@ body {
 h1 {
   margin: 0;
   font-size: 18px;
-  background-color: pink;
+  font-weight: bold;
+  color: #000055;
+  background-color: #c0cbff;
 }
 
 div {
@@ -74,11 +76,13 @@ table {
 }
 
 th {
-  background-color: #aaeeff;
+  font-weight: bold;
+  color: #000055;
+  background-color: #c0cbff;
 }
 
 th,
 td {
   padding: 5px 20px;
-  border: solid 2px dodgerblue;
+  border: solid 2px #000055;
 }
