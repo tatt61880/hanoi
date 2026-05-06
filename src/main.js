@@ -4,7 +4,7 @@
   const app = window.app;
   Object.freeze(app);
 
-  const version = 'Version: 2023.03.11';
+  const version = 'Version: 2026.05.06';
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
