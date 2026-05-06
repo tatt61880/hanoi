@@ -62,6 +62,12 @@ div.button {
   border-radius: 100%;
 }
 
+svg {
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 g.button {
   cursor: pointer;
 }
