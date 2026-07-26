@@ -60,6 +60,10 @@ div.button {
   border-radius: 100%;
 }
 
+#main {
+  user-select: none;
+}
+
 svg {
   user-select: none;
 }
@@ -84,5 +88,5 @@ th {
 th,
 td {
   padding: 5px 20px;
-  border: solid 2px #000055;
+  border: 1px solid #9aa6cf;
 }
