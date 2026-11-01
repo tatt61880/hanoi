@@ -4,188 +4,78 @@
 <head>
   <title>ハノイの塔</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=500">
-  <link rel="icon" type="image/x-icon" href="./images/favicon.png?2023.10.27">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ハノイの塔の最短手順を、再生・早戻し・1手ずつの操作で確かめられます。">
+  <link rel="icon" type="image/png" href="./images/favicon.png?2023.10.27">
   <link rel="apple-touch-icon" sizes="152x152" href="./images/apple-touch-icon.png?2023.10.27">
-
   <link rel="stylesheet" href="./css/main.css">
-
-  <script src="./src/class-elems.js"></script>
-  <script src="./src/main.js"></script>
+  <script src="./src/class-elems.js" defer></script>
+  <script src="./src/class-hanoi.js" defer></script>
+  <script src="./src/main.js" defer></script>
 </head>
 
 <body>
-  <div id="contents">
-    <div>
+  <main id="contents">
+    <header class="page-header">
       <h1>ハノイの塔</h1>
-      <span id="version-info"><br></span>
+      <span id="version-info">v2026.11.01</span>
+    </header>
 
-      <div id="main">
-        <div>
-          <div id="reload">
-            <svg width="60" height="60">
-              <g id="button-reload" class="button">
-                <circle cx="30" cy="30" r="28" fill="#faf" stroke="indigo" stroke-width="4" />
-                <path d="M 44 30 A 14 14 0 1 1 35 18" fill="none" stroke="indigo" stroke-width="4" />
-                <path d="M 31 10 L 42 21 L 27 24 Z" fill="indigo" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </div>
-          <svg width="80" height="60">
-            <g id="button-scale-down" class="button" transform="translate(40,30)">
-              <circle cx="0" cy="0" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-              <path d="M -10 -13 L 0 2 L 10 -13 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              <path d="M -10 2 L 0 17 L 10 2 Z" fill="darkorange" stroke="none" stroke-width="4" />
-            </g>
-          </svg>
-          <svg width="80" height="60">
-            <g id="button-scale-up" class="button" transform="translate(40,30)">
-              <circle cx="0" cy="0" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-              <path d="M -10 13 L 0 -2 L 10 13 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              <path d="M -10 -2 L 0 -17 L 10 -2 Z" fill="darkorange" stroke="none" stroke-width="4" />
-            </g>
-          </svg>
-
-          <span id="speed-info"></span>
+    <div id="main">
+      <p class="intro">すべての円盤を、左の棒から右の棒へ。</p>
+      <div class="settings">
+        <div class="disk-controls" role="group" aria-label="円盤の枚数">
+          <button id="button-scale-down" type="button" aria-label="円盤を1枚減らす">−</button>
+          <span>円盤 <strong id="disk-count">12</strong> 枚</span>
+          <button id="button-scale-up" type="button" aria-label="円盤を1枚増やす">＋</button>
         </div>
-
-        <svg id="svg-board" width="480" height="170"></svg>
-
-        <div>
-          <div class="button">
-            <svg width="60" height="60">
-              <g id="button-speeddown" class="button">
-                <circle cx="30" cy="30" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M 43 20 L 28 30 L 43 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M 28 20 L 13 30 L 28 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </div>
-          <div class="button">
-            <svg width="60" height="60">
-              <g id="button-stop" class="button" display="none">
-                <circle cx="30" cy="30" r="28" fill="lightgreen" stroke="green" stroke-width="4" />
-                <rect x="19" y="17" width="6" height="26" rx="3" ry="3" fill="green" />
-                <rect x="35" y="17" width="6" height="26" rx="3" ry="3" fill="green" />
-              </g>
-              <g id="button-start" class="button">
-                <circle cx="30" cy="30" r="28" fill="lightgreen" stroke="green" stroke-width="4" />
-                <path d="M 22 17 L 43 30 L 22 43 Z" fill="green" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </div>
-          <div class="button">
-            <svg width="60" height="60">
-              <g id="button-speedup" class="button">
-                <circle cx="30" cy="30" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M 17 20 L 32 30 L 17 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M 32 20 L 47 30 L 32 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </div>
-        </div>
+        <button id="button-reload" type="button">最初から</button>
       </div>
+
+      <svg id="svg-board" viewBox="0 0 480 190" width="480" height="190" role="img" aria-label="ハノイの塔の盤面"></svg>
+
+      <div class="progress-heading">
+        <label for="step-range">手数 <output id="step-info" for="step-range" aria-live="off">0 / 4,095</output></label>
+        <span id="speed-info" role="status" aria-live="polite">停止中</span>
+      </div>
+      <input id="step-range" type="range" min="0" max="4095" value="0" step="1" aria-valuetext="0 / 4,095 手">
+      <p id="move-info">次の手を表示します。</p>
+
+      <div class="playback-controls" role="group" aria-label="再生の操作">
+        <button id="button-speeddown" type="button">早戻し</button>
+        <button id="button-toggle" class="primary" type="button">再生</button>
+        <button id="button-speedup" type="button">早送り</button>
+      </div>
+      <div class="step-controls" role="group" aria-label="1手ずつの操作">
+        <button id="button-prev" type="button">1手戻す</button>
+        <button id="button-next" type="button">1手進む</button>
+      </div>
+      <p class="hint">早戻し・早送りは、押すたびに最大64倍速まで加速します。</p>
     </div>
 
-    <div>
+    <details class="help">
+      <summary>ルールと操作方法</summary>
+      <p>1回に動かせるのは、いずれかの棒の一番上にある円盤1枚だけです。小さい円盤の上に、大きい円盤は置けません。</p>
+      <p>このページでは最短手順を再生します。円盤が <var>n</var> 枚のとき、最短手数は 2<sup>n</sup> − 1 手です。</p>
+      <p>円盤の番号は、小さい順に1、2、3…と数えます。</p>
+      <p>スライダーで任意の手数に移動できます。円盤の枚数を変えると、最初の状態に戻ります。</p>
       <table>
-        <tr>
-          <th>キー</th>
-          <th>動作</th>
-          <th>同じ動作をするボタン</th>
-        </tr>
-        <tr>
-          <td rowspan="2">スペース</td>
-          <td>再生</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6)">
-                <circle cx="30" cy="30" r="28" fill="lightgreen" stroke="green" stroke-width="4" />
-                <path d="M 22 17 L 43 30 L 22 43 Z" fill="green" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>停止</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6)">
-                <circle cx="30" cy="30" r="28" fill="lightgreen" stroke="green" stroke-width="4" />
-                <rect x="19" y="17" width="6" height="26" rx="3" ry="3" fill="green" />
-                <rect x="35" y="17" width="6" height="26" rx="3" ry="3" fill="green" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>r</td>
-          <td>リセット</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6)">
-                <circle cx="30" cy="30" r="28" fill="#faf" stroke="indigo" stroke-width="4" />
-                <path d="M 44 30 A 14 14 0 1 1 35 18" fill="none" stroke="indigo" stroke-width="4" />
-                <path d="M 31 10 L 42 21 L 27 24 Z" fill="indigo" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>←</td>
-          <td>早戻し</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6)">
-                <circle cx="30" cy="30" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M 43 20 L 28 30 L 43 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M 28 20 L 13 30 L 28 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>→</td>
-          <td>早送り</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6)">
-                <circle cx="30" cy="30" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M 17 20 L 32 30 L 17 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M 32 20 L 47 30 L 32 40 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>↑</td>
-          <td>サイズ↑</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6) translate(30,30)">
-                <circle cx="0" cy="0" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M -10 13 L 0 -2 L 10 13 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M -10 -2 L 0 -17 L 10 -2 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
-        <tr>
-          <td>↓</td>
-          <td>サイズ↓</td>
-          <td>
-            <svg width="36" height="36" style="margin-top: 5px;">
-              <g transform="scale(0.6 0.6) translate(30,30)">
-                <circle cx="0" cy="0" r="28" fill="#ffa" stroke="darkorange" stroke-width="4" />
-                <path d="M -10 -13 L 0 2 L 10 -13 Z" fill="darkorange" stroke="none" stroke-width="4" />
-                <path d="M -10 2 L 0 17 L 10 2 Z" fill="darkorange" stroke="none" stroke-width="4" />
-              </g>
-            </svg>
-          </td>
-        </tr>
+        <caption>キーボード操作</caption>
+        <thead>
+          <tr><th scope="col">キー</th><th scope="col">動作</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>スペース</td><td>再生・一時停止</td></tr>
+          <tr><td>R</td><td>最初から</td></tr>
+          <tr><td>← / →</td><td>早戻し / 早送り</td></tr>
+          <tr><td>↑ / ↓</td><td>円盤を増やす / 減らす</td></tr>
+          <tr><td>, / .</td><td>1手戻す / 1手進む</td></tr>
+        </tbody>
       </table>
-    </div>
-  </div>
+      <p>ボタンやスライダーを選択している間は、その部品の標準操作が優先されます。ページを離れると再生は一時停止します。</p>
+    </details>
+    <noscript><p>このページを使うには JavaScript を有効にしてください。</p></noscript>
+  </main>
 </body>
 
 </html>

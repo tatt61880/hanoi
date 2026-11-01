@@ -4,89 +4,232 @@ html {
   touch-action: manipulation;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background-color: #ccffff;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: #172b4d;
+  background-color: #edf5ff;
 }
 
 #contents {
-  max-width: 500px;
-  padding: 0;
+  max-width: 540px;
   margin: 0 auto;
-  text-align: center;
-  background-color: white;
+  background-color: #ffffff;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  justify-content: center;
+  padding: 10px;
+  background-color: #c0cbff;
 }
 
 h1 {
   margin: 0;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 1.3rem;
   color: #000055;
-  background-color: #c0cbff;
-}
-
-div {
-  padding-bottom: 5px;
 }
 
 #version-info {
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #bbbbbb;
-}
-
-#reload {
-  float: left;
-  height: 60px;
-  margin: 0 15px;
-}
-
-#speed-info {
-  display: flex;
-  justify-content: flex-end;
-  float: right;
-  width: auto;
-  height: 30px;
-  margin: 15px;
-  font-size: 30px;
-}
-
-div.button {
-  display: inline-block;
-  width: 60px;
-  height: 60px;
-  margin: 15px;
-  user-select: none;
-  border-radius: 100%;
+  font-size: 0.8rem;
+  color: #425479;
 }
 
 #main {
+  padding: 12px 16px 16px;
+}
+
+.intro {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 600;
+  color: #214b8b;
+  cursor: pointer;
+  background-color: #edf4ff;
+  border: 1px solid #b7ccec;
+  border-radius: 8px;
+}
+
+button:disabled {
+  color: #68758b;
+  cursor: default;
+  background-color: #f1f3f7;
+  border-color: #dce2ec;
+}
+
+button.primary {
+  color: #ffffff;
+  background-color: #245abb;
+  border-color: #245abb;
+}
+
+@media (hover: hover) {
+  button:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+}
+
+.settings,
+.disk-controls,
+.progress-heading {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings,
+.progress-heading {
+  flex-wrap: wrap;
+}
+
+.disk-controls {
+  gap: 10px;
+}
+
+.disk-controls button {
+  padding: 6px;
+  font-size: 1.1rem;
+}
+
+#disk-count {
+  display: inline-block;
+  min-width: 1.5em;
+  text-align: center;
+}
+
+#svg-board {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 24px 0 16px;
   user-select: none;
 }
 
-svg {
-  user-select: none;
+#svg-board text {
+  font-size: 14px;
+  fill: #425479;
 }
 
-g.button {
+#step-info {
+  margin-left: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#speed-info {
+  font-size: 0.85rem;
+  color: #425479;
+}
+
+#step-range {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin: 4px 0 0;
+  accent-color: #245abb;
   cursor: pointer;
 }
 
-table {
-  margin: 10px auto;
-  font-size: 1.2rem;
-  border-collapse: collapse;
-  background-color: #f8f8ff;
+#move-info {
+  min-height: 1.6em;
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
-th {
-  font-weight: bold;
-  color: #000055;
-  background-color: #c0cbff;
+.playback-controls,
+.step-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.playback-controls {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.step-controls {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 8px;
+}
+
+.hint {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: #52617b;
+}
+
+.help {
+  padding: 0 16px 16px;
+  font-size: 0.9rem;
+}
+
+summary {
+  padding: 10px 0;
+  font-weight: 600;
+  color: #214b8b;
+  cursor: pointer;
+  border-top: 1px solid #dce5f2;
+}
+
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #245abb;
+  outline-offset: 3px;
+}
+
+.help p {
+  margin: 10px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+caption {
+  margin: 8px 0;
+  font-weight: 600;
+  text-align: left;
 }
 
 th,
 td {
-  padding: 5px 20px;
-  border: 1px solid #9aa6cf;
+  padding: 6px 10px;
+  text-align: left;
+  border: 1px solid #c4d4ee;
+}
+
+th {
+  background-color: #e6eeff;
+}
+
+@media (width <= 360px) {
+  #main,
+  .help {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  button {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
 }

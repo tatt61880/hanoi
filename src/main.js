@@ -4,44 +4,16 @@
   const app = window.app;
   Object.freeze(app);
 
-  const version = 'Version: 2026.05.06';
-
   const SVG_NS = 'http://www.w3.org/2000/svg';
-
-  let num = 12;
   const speedMax = 64;
-  const speedStep = 64;
-  const interval = 10;
-  const scaleMin = 2;
-  const scaleMax = 14;
-
-  let step = 0;
-  let stepPrev = 0;
-  let speed = 0;
-
-  let svgHeight;
+  const moveDuration = 640;
+  const svgWidth = 480;
+  const ringHeight = 10;
   const floorHeight = 10;
   const barWidth = 10;
   const ringWidthStep = 5;
-  const ringHeight = 10;
-  const elemRings = [];
-  const xPos = [];
-
-  const elems = new app.Elems({
-    versionInfo: 'version-info',
-    svg: 'svg-board',
-    speedInfo: 'speed-info',
-    buttonReload: 'button-reload',
-    buttonScaleDown: 'button-scale-down',
-    buttonScaleUp: 'button-scale-up',
-    buttonStart: 'button-start',
-    buttonStop: 'button-stop',
-    buttonSpeedDown: 'button-speeddown',
-    buttonSpeedUp: 'button-speedup',
-  });
-
-  let elemStep;
-
+  const xPos = [90, 240, 390];
+  const towerNames = ['A', 'B', 'C'];
   const colors = [
     '#E60012',
     '#F39800',
@@ -57,284 +29,287 @@
     '#E5004F',
   ];
 
-  let setIntervalId;
+  const elems = new app.Elems({
+    svg: 'svg-board',
+    diskCount: 'disk-count',
+    stepInfo: 'step-info',
+    stepRange: 'step-range',
+    moveInfo: 'move-info',
+    speedInfo: 'speed-info',
+    buttonReload: 'button-reload',
+    buttonScaleDown: 'button-scale-down',
+    buttonScaleUp: 'button-scale-up',
+    buttonToggle: 'button-toggle',
+    buttonSpeedDown: 'button-speeddown',
+    buttonSpeedUp: 'button-speedup',
+    buttonPrev: 'button-prev',
+    buttonNext: 'button-next',
+  });
 
-  window.addEventListener('DOMContentLoaded', init, false);
+  let hanoi;
+  let speed = 0;
+  let frameId = null;
+  let lastTime = null;
+  let elapsed = 0;
+  let floorY;
+  const elemRings = [];
 
-  function keydown(e) {
-    e.preventDefault();
-    if (e.key === ' ') {
-      if (speed !== 1) {
-        start();
-      } else {
-        stop();
-      }
-    } else if (e.key === 'r') {
-      reload();
-    } else if (e.key === 'ArrowLeft') {
-      speedDown();
-    } else if (e.key === 'ArrowRight') {
-      speedUp();
-    } else if (e.key === 'ArrowUp') {
-      scaleUp();
-    } else if (e.key === 'ArrowDown') {
-      scaleDown();
-    }
-  }
-
-  function updateSpeedInfo() {
-    let elem;
-    if (speed < 0) {
-      elem = elems.buttonSpeedDown;
-    } else if (speed === 0) {
-      elem = elems.buttonStop;
-    } else if (speed === 1) {
-      elem = elems.buttonStart;
-    } else {
-      elem = elems.buttonSpeedUp;
-    }
-    while (elems.speedInfo.firstChild) {
-      elems.speedInfo.removeChild(elems.speedInfo.firstChild);
-    }
-    const g = document.createElementNS(SVG_NS, 'g');
-    for (const child of elem.childNodes) {
-      const elem = child.cloneNode(true);
-      g.appendChild(elem);
-    }
-    if (Math.abs(speed) > 1) {
-      const text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('x', 65);
-      text.setAttribute('y', 40);
-      text.appendChild(document.createTextNode(`x${Math.abs(speed)}`));
-      g.appendChild(text);
-    }
-    g.setAttribute('transform', 'scale(0.5 0.5)');
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('width', '60');
-    svg.setAttribute('height', '30');
-    svg.appendChild(g);
-    elems.speedInfo.appendChild(svg);
-  }
-
-  function reload() {
-    showElem(elems.buttonScaleDown);
-    showElem(elems.buttonScaleUp);
-    window.clearInterval(setIntervalId);
-    reset();
-  }
-
-  function scaleDown() {
-    if (num > scaleMin) {
-      --num;
-      reload();
-
-      showElem(elems.buttonScaleUp);
-      if (num === scaleMin) {
-        hideElem(elems.buttonScaleDown);
-      }
-    }
-  }
-
-  function scaleUp() {
-    if (num < scaleMax) {
-      ++num;
-      reload();
-
-      showElem(elems.buttonScaleDown);
-      if (num === scaleMax) {
-        hideElem(elems.buttonScaleUp);
-      }
-    }
-  }
-
-  function start() {
-    if (step / speedStep === 2 ** num - 1) return;
-    showElem(elems.buttonSpeedDown);
-    showElem(elems.buttonStop);
-    hideElem(elems.buttonStart);
-    hideElem(elems.buttonScaleDown);
-    hideElem(elems.buttonScaleUp);
-    speed = 1;
-    updateSpeedInfo();
-  }
-
-  function stop() {
-    hideElem(elems.buttonStop);
-    showElem(elems.buttonStart);
-    speed = 0;
-    updateSpeedInfo();
-  }
-
-  function speedDown() {
-    hideElem(elems.buttonStop);
-    showElem(elems.buttonStart);
-    showElem(elems.buttonSpeedUp);
-    if (speed < 0 && speed !== -speedMax) {
-      speed *= 2;
-    } else {
-      speed = -1;
-    }
-    while (step % speed !== 0) step++;
-    updateSpeedInfo();
-  }
-
-  function speedUp() {
-    showElem(elems.buttonSpeedDown);
-    hideElem(elems.buttonStop);
-    showElem(elems.buttonStart);
-    if (speed > 1 && speed !== speedMax) {
-      speed *= 2;
-    } else {
-      speed = 2;
-    }
-    step = step - step % speed;
-    updateSpeedInfo();
-  }
+  window.addEventListener('DOMContentLoaded', init, { once: true });
 
   function init() {
     elems.init();
-    elems.versionInfo.innerText = version;
-    elems.buttonReload.addEventListener('click', reload, false);
-    elems.buttonScaleDown.addEventListener('click', scaleDown, false);
-    elems.buttonScaleUp.addEventListener('click', scaleUp, false);
-    elems.buttonStart.addEventListener('click', start, false);
-    elems.buttonStop.addEventListener('click', stop, false);
-    elems.buttonSpeedDown.addEventListener('click', speedDown, false);
-    elems.buttonSpeedUp.addEventListener('click', speedUp, false);
-
-    document.addEventListener('keydown', keydown, false);
-
-    reset();
+    elems.buttonReload.addEventListener('click', () => seek(0));
+    elems.buttonScaleDown.addEventListener('click', () => changeDisks(-1));
+    elems.buttonScaleUp.addEventListener('click', () => changeDisks(1));
+    elems.buttonToggle.addEventListener('click', toggle);
+    elems.buttonSpeedDown.addEventListener('click', rewind);
+    elems.buttonSpeedUp.addEventListener('click', fastForward);
+    elems.buttonPrev.addEventListener('click', () => stepBy(-1));
+    elems.buttonNext.addEventListener('click', () => stepBy(1));
+    elems.stepRange.addEventListener('input', () =>
+      seek(Number(elems.stepRange.value))
+    );
+    document.addEventListener('keydown', keydown);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) setSpeed(0);
+    });
+    window.addEventListener('pagehide', () => setSpeed(0));
+    reset(12);
   }
 
-  function reset() {
-    const stepArray = [];
-    function hanoi(n, f, t, v) {
-      if (n > 0) {
-        hanoi(n - 1, f, v, t);
-        stepArray.push({ from: f, to: t });
-        hanoi(n - 1, v, t, f);
-      }
+  function reset(num) {
+    cancelFrame();
+    speed = 0;
+    hanoi = new app.Hanoi(num);
+    elems.diskCount.textContent = num;
+    elems.stepRange.max = hanoi.total;
+    drawBoard();
+    render();
+  }
+
+  function changeDisks(delta) {
+    const num = hanoi.num + delta;
+    if (num < app.Hanoi.minDisks || num > app.Hanoi.maxDisks) return;
+    reset(num);
+  }
+
+  function cancelFrame() {
+    if (frameId !== null) window.cancelAnimationFrame(frameId);
+    frameId = null;
+    lastTime = null;
+    elapsed = 0;
+  }
+
+  function setSpeed(nextSpeed) {
+    cancelFrame();
+    speed = nextSpeed;
+    if (
+      (speed < 0 && hanoi.step === 0) ||
+      (speed > 0 && hanoi.step === hanoi.total)
+    ) {
+      speed = 0;
+    }
+    updateControls();
+    if (speed !== 0) frameId = window.requestAnimationFrame(animate);
+  }
+
+  function toggle() {
+    if (speed !== 0) {
+      setSpeed(0);
+      return;
+    }
+    if (hanoi.step === hanoi.total) seek(0);
+    setSpeed(1);
+  }
+
+  function rewind() {
+    let nextSpeed = -1;
+    if (speed < 0) nextSpeed = Math.max(-speedMax, speed * 2);
+    setSpeed(nextSpeed);
+  }
+
+  function fastForward() {
+    let nextSpeed = 2;
+    if (speed > 0) nextSpeed = Math.min(speedMax, speed * 2);
+    setSpeed(nextSpeed);
+  }
+
+  function seek(target) {
+    cancelFrame();
+    speed = 0;
+    hanoi.seek(Math.max(0, Math.min(hanoi.total, target)));
+    render();
+  }
+
+  function stepBy(delta) {
+    seek(hanoi.step + delta);
+  }
+
+  function animate(time) {
+    frameId = null;
+    if (lastTime !== null) elapsed += (time - lastTime) * Math.abs(speed);
+    lastTime = time;
+    const moves = Math.floor(elapsed / moveDuration);
+    if (moves > 0) {
+      elapsed %= moveDuration;
+      const target = hanoi.step + Math.sign(speed) * moves;
+      hanoi.seek(Math.max(0, Math.min(hanoi.total, target)));
+      if (hanoi.step === 0 || hanoi.step === hanoi.total) speed = 0;
+      render();
+    }
+    if (speed !== 0) frameId = window.requestAnimationFrame(animate);
+  }
+
+  function keydown(event) {
+    if (
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.isComposing
+    ) {
+      return;
+    }
+    if (
+      event.target instanceof Element &&
+      event.target.closest(
+        'input, textarea, select, button, a, summary, [contenteditable]:not([contenteditable="false"])'
+      )
+    ) {
+      return;
     }
 
-    hanoi(num, 0, 2, 1);
+    const actions = {
+      ' ': toggle,
+      r: () => seek(0),
+      R: () => seek(0),
+      ArrowLeft: rewind,
+      ArrowRight: fastForward,
+      ArrowUp: () => changeDisks(1),
+      ArrowDown: () => changeDisks(-1),
+      ',': () => stepBy(-1),
+      '.': () => stepBy(1),
+    };
+    if (!Object.hasOwn(actions, event.key)) return;
+    event.preventDefault();
+    if (!event.repeat) actions[event.key]();
+  }
 
-    const statesArray = [[], [], []];
-    statesArray[0] = Array.from(new Array(num), (_, i) => i + 1).reverse(); // num, num-1, ..., 2, 1
-
-    hideElem(elems.buttonSpeedDown);
-    stop();
-    step = 0;
-    stepPrev = step;
-    svgUpdateByArray(elems.svg, statesArray);
-
-    updateSpeedInfo();
-
-    {
-      let i = 0;
-      setIntervalId = window.setInterval(function () {
-        step += speed;
-        if (step < 0) {
-          stop();
-          hideElem(elems.buttonSpeedDown);
-          step = 0;
-        }
-        if (step > stepArray.length * speedStep) {
-          stop();
-          hideElem(elems.buttonSpeedUp);
-          hideElem(elems.buttonStart);
-          step = stepArray.length * speedStep;
-        }
-        if (step !== stepPrev && step % speedStep === 0) {
-          stepPrev = step;
-          if (speed > 0) {
-            if (i !== stepArray.length) {
-              moveRing(stepArray[i].from, stepArray[i].to);
-              i++;
-            }
-          } else {
-            if (i !== 0) {
-              i--;
-              moveRing(stepArray[i].to, stepArray[i].from);
-            }
-          }
-        }
-      }, interval);
+  function updateControls() {
+    const atStart = hanoi.step === 0;
+    const atEnd = hanoi.step === hanoi.total;
+    elems.buttonScaleDown.disabled = hanoi.num === app.Hanoi.minDisks;
+    elems.buttonScaleUp.disabled = hanoi.num === app.Hanoi.maxDisks;
+    elems.buttonPrev.disabled = atStart;
+    elems.buttonNext.disabled = atEnd;
+    elems.buttonSpeedDown.disabled = atStart || speed === -speedMax;
+    elems.buttonSpeedUp.disabled = atEnd || speed === speedMax;
+    let buttonText = '再生';
+    let status = '停止中';
+    if (atEnd) {
+      buttonText = 'もう一度';
+      status = '完了';
     }
-
-    function moveRing(from, to) {
-      const state = statesArray[from].pop();
-      statesArray[to].push(state);
-      elemRings[state].setAttribute('x', xPos[to] - state * ringWidthStep - barWidth / 2);
-      elemRings[state].setAttribute('y', svgHeight - floorHeight - ringHeight * statesArray[to].length);
-      elemStep.innerHTML = `${step / speedStep}手目`;
+    if (speed !== 0) {
+      buttonText = '一時停止';
+      status = `再生中 ${speed}倍速`;
+      if (speed < 0) status = `早戻し ${Math.abs(speed)}倍速`;
+    }
+    elems.buttonToggle.textContent = buttonText;
+    if (elems.speedInfo.textContent !== status) {
+      elems.speedInfo.textContent = status;
     }
   }
 
-  function createRect(param) {
-    const rect = document.createElementNS(SVG_NS, 'rect');
-    rect.setAttribute('x', param.x);
-    rect.setAttribute('y', param.y);
-    rect.setAttribute('width', param.width);
-    rect.setAttribute('height', param.height);
-    return rect;
+  function render() {
+    for (let tower = 0; tower < hanoi.towers.length; tower++) {
+      hanoi.towers[tower].forEach((disk, index) => {
+        elemRings[disk].setAttribute(
+          'x',
+          xPos[tower] - disk * ringWidthStep - barWidth / 2
+        );
+        elemRings[disk].setAttribute('y', floorY - ringHeight * (index + 1));
+      });
+    }
+    const progress = `${hanoi.step.toLocaleString(
+      'ja-JP'
+    )} / ${hanoi.total.toLocaleString('ja-JP')}`;
+    elems.stepInfo.textContent = progress;
+    elems.stepRange.value = hanoi.step;
+    elems.stepRange.setAttribute('aria-valuetext', `${progress} 手`);
+    let nextMove = 'すべての円盤を右の棒へ移動しました。';
+    if (hanoi.step < hanoi.total) {
+      const { disk, from, to } = hanoi.moves[hanoi.step];
+      nextMove = `次の手：円盤${disk}を ${towerNames[from]} → ${towerNames[to]}`;
+    }
+    elems.moveInfo.textContent = nextMove;
+    const positions = hanoi.towers
+      .map((tower, i) => {
+        if (tower.length === 0) return `${towerNames[i]}：なし`;
+        return `${towerNames[i]}：下から円盤${tower.join('、')}`;
+      })
+      .join('。');
+    elems.svg.setAttribute(
+      'aria-label',
+      `${hanoi.num}枚のハノイの塔、${hanoi.step}手目。${positions}`
+    );
+    updateControls();
   }
 
-  function svgUpdateByArray(svg, statesArray) {
-    svg.textContent = '';
-    const g = document.createElementNS(SVG_NS, 'g');
-    const svgWidth = 480;
-    svgHeight = 30 + ringHeight * (num + 1) + floorHeight;
-    svg.style.width = svgWidth;
-    svg.style.height = svgHeight;
-
-    // 床
-    {
-      const rect = createRect({ x: 0, y: svgHeight - floorHeight, width: svgWidth, height: floorHeight });
-      rect.setAttribute('fill', '#a80');
-      g.appendChild(rect);
+  function svgElement(tag, attributes) {
+    const element = document.createElementNS(SVG_NS, tag);
+    for (const [name, value] of Object.entries(attributes)) {
+      element.setAttribute(name, value);
     }
-
-    for (let i = 0; i < 3; ++i) {
-      xPos[i] = svgWidth / 2 + 150 * (i - 1);
-    }
-
-    // 棒
-    for (let i = 0; i < 3; ++i) {
-      const rect = createRect({ x: xPos[i] - barWidth / 2, y: svgHeight - floorHeight - (num + 1) * ringHeight, width: barWidth, height: (num + 1) * ringHeight });
-      rect.setAttribute('fill', '#a80');
-      g.appendChild(rect);
-    }
-
-    // リング
-    for (let i = 0; i < 3; ++i) {
-      let y = svgHeight - floorHeight - ringHeight;
-      for (const state of statesArray[i]) {
-        const rect = createRect({ x: xPos[i] - state * ringWidthStep - barWidth / 2, y, width: barWidth + ringWidthStep * (2 * state), height: ringHeight });
-        rect.setAttribute('fill', colors[(state - 1) % colors.length]);
-        elemRings[state] = rect;
-        g.appendChild(rect);
-        y -= ringHeight;
-      }
-    }
-
-    {
-      elemStep = document.createElementNS(SVG_NS, 'text');
-      elemStep.setAttribute('x', 15);
-      elemStep.setAttribute('y', 20);
-      elemStep.innerHTML = `${step / speedStep}手目`;
-      g.appendChild(elemStep);
-    }
-    elems.svg.appendChild(g);
+    return element;
   }
 
-  function showElem(elem) {
-    if (elem === undefined) return;
-    elem.style.display = 'block';
-  }
-
-  function hideElem(elem) {
-    if (elem === undefined) return;
-    elem.style.display = 'none';
+  function drawBoard() {
+    elems.svg.replaceChildren();
+    elemRings.length = 0;
+    floorY = 20 + ringHeight * (hanoi.num + 1);
+    const height = floorY + floorHeight + 30;
+    elems.svg.setAttribute('viewBox', `0 0 ${svgWidth} ${height}`);
+    elems.svg.setAttribute('height', height);
+    elems.svg.appendChild(
+      svgElement('rect', {
+        x: 0,
+        y: floorY,
+        width: svgWidth,
+        height: floorHeight,
+        fill: '#aa8800',
+      })
+    );
+    for (let i = 0; i < 3; i++) {
+      elems.svg.appendChild(
+        svgElement('rect', {
+          x: xPos[i] - barWidth / 2,
+          y: 20,
+          width: barWidth,
+          height: floorY - 20,
+          fill: '#aa8800',
+        })
+      );
+      const label = svgElement('text', {
+        x: xPos[i],
+        y: height - 8,
+        'text-anchor': 'middle',
+      });
+      label.textContent = towerNames[i];
+      elems.svg.appendChild(label);
+    }
+    for (let disk = hanoi.num; disk >= 1; disk--) {
+      const ring = svgElement('rect', {
+        width: barWidth + 2 * disk * ringWidthStep,
+        height: ringHeight,
+        fill: colors[(disk - 1) % colors.length],
+        'data-disk': disk,
+      });
+      const title = svgElement('title', {});
+      title.textContent = `円盤${disk}`;
+      ring.appendChild(title);
+      elemRings[disk] = ring;
+      elems.svg.appendChild(ring);
+    }
   }
 })();

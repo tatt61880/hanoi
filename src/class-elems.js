@@ -10,7 +10,7 @@
 
     init() {
       initElems(this, this.#elems);
-      Object.freeze(window.app.elems);
+      Object.freeze(this);
 
       function initElems(obj, elems) {
         for (const key in elems) {
