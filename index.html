@@ -35,7 +35,10 @@
       <svg id="svg-board" viewBox="0 0 480 190" width="480" height="190" role="img" aria-label="ハノイの塔の盤面"></svg>
 
       <div class="progress-heading">
-        <label for="step-range">手数 <output id="step-info" for="step-range" aria-live="off">0 / 4,095</output></label>
+        <div>
+          <label for="step-range">手数</label>
+          <output id="step-info" for="step-range" aria-live="off">0 / 4,095</output>
+        </div>
         <span id="speed-info" role="status" aria-live="polite">停止中</span>
       </div>
       <input id="step-range" type="range" min="0" max="4095" value="0" step="1" aria-valuetext="0 / 4,095 手">
