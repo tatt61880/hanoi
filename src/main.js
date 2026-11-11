@@ -30,6 +30,7 @@
   ];
 
   const elems = new app.Elems({
+    main: 'main',
     svg: 'svg-board',
     diskCount: 'disk-count',
     stepInfo: 'step-info',
@@ -58,6 +59,10 @@
 
   function init() {
     elems.init();
+    elems.main.addEventListener('touchend', preventDisabledButtonZoom, {
+      capture: true,
+      passive: false,
+    });
     elems.buttonReload.addEventListener('click', () => seek(0));
     elems.buttonScaleDown.addEventListener('click', () => changeDisks(-1));
     elems.buttonScaleUp.addEventListener('click', () => changeDisks(1));
@@ -75,6 +80,18 @@
     });
     window.addEventListener('pagehide', () => setSpeed(0));
     reset(12);
+  }
+
+  function preventDisabledButtonZoom(event) {
+    if (
+      event.touches.length === 0 &&
+      event.changedTouches.length === 1 &&
+      event.target instanceof Element &&
+      event.target.closest('button:disabled')
+    ) {
+      // Keep taps on disabled buttons from becoming native zoom gestures.
+      event.preventDefault();
+    }
   }
 
   function reset(num) {
